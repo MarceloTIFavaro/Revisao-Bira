@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  postgres:
+    build: 
+      context: ./postgres # Caminho até a pasta onde está o Dockerfile
+      dockerfile: Dockerfile
+    container_name: db_postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: startup_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  web:
+    image: php:8.2-apache
+    container_name: php_apache
+    restart: always
+    ports:
+      - "8080:80"
+    volumes:
+      - ./:/var/www/html/
+    depends_on:
+      - postgres
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_DB: startup_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+
+volumes:
+  pgdata:
